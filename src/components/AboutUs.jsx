@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Container, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import aboutUs_img from '../assets/aboutUs_img.png';
+import aboutUs_img from '../assets/AboutUs_img.png';
 
 const AboutUsSection = styled(Box)(({ theme }) => ({
   padding: '80px 0',
