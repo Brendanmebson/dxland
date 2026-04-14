@@ -1,151 +1,195 @@
 import React from 'react';
-import { Box, Typography, TextField, Button } from '@mui/material';
+import { Box, Typography, TextField, Button, Container, IconButton, Stack, Divider } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import FacebookIcon from '@mui/icons-material/Facebook';
+import TwitterIcon from '@mui/icons-material/Twitter';
+import LinkedInIcon from '@mui/icons-material/LinkedIn';
+import InstagramIcon from '@mui/icons-material/Instagram';
+import GitHubIcon from '@mui/icons-material/GitHub';
+
+import { Link } from 'react-router-dom';
 
 const FooterSection = styled(Box)(({ theme }) => ({
-  backgroundColor: theme.palette.primary.main,
-  color: '#fff',
-  padding: '40px 16px 40px 16px', // reduced padding for mobile
-  [theme.breakpoints.up('md')]: {
+  backgroundColor: '#00144D',
+  color: '#ffffff',
+  padding: '100px 0 40px 0',
+  position: 'relative',
+  overflow: 'hidden',
+  [theme.breakpoints.down('md')]: {
     padding: '80px 0 40px 0',
   },
 }));
 
-const FooterContainer = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '32px',
-  maxWidth: '1200px',
-  margin: '0 auto',
-  [theme.breakpoints.up('md')]: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    gap: '0px',
-  },
-}));
-
-const FooterCol = styled(Box)(({ theme }) => ({
-  flex: 1,
-  minWidth: 180,
-  marginBottom: '24px',
-  [theme.breakpoints.up('md')]: {
-    marginBottom: 0,
-    paddingRight: '32px',
-  },
-}));
-
 const FooterHeading = styled(Typography)(({ theme }) => ({
-  fontWeight: 700,
-  fontSize: '1.1rem',
-  marginBottom: '12px',
-  [theme.breakpoints.up('md')]: {
-    fontSize: '1.2rem',
-  },
+  fontWeight: 800,
+  fontSize: '1.25rem',
+  marginBottom: '24px',
+  color: '#ffffff',
+  letterSpacing: '-0.02em',
 }));
 
-const FooterLink = styled(Typography)(({ theme }) => ({
-  color: '#fff',
-  fontSize: '0.95rem',
-  marginBottom: '8px',
+const FooterLink = styled(Box)(({ theme }) => ({
+  display: 'block',
+  color: 'rgba(255,255,255,0.7)',
+  fontSize: '1rem',
+  marginBottom: '12px',
   cursor: 'pointer',
   fontWeight: 400,
-  transition: 'color 0.2s',
+  textDecoration: 'none',
+  transition: 'all 0.2s ease',
   '&:hover': {
-    color: theme.palette.secondary.main,
+    color: '#FFEB3B',
+    transform: 'translateX(4px)',
   },
-  [theme.breakpoints.up('md')]: {
-    fontSize: '1rem',
+}));
+
+const SocialButton = styled(IconButton)(({ theme }) => ({
+  color: '#ffffff',
+  backgroundColor: 'rgba(255,255,255,0.05)',
+  marginRight: '12px',
+  '&:hover': {
+    backgroundColor: '#FFEB3B',
+    color: '#001D6E',
   },
+  transition: 'all 0.3s ease',
 }));
 
 const NewsletterInput = styled(TextField)(({ theme }) => ({
-  background: '#fff',
-  borderRadius: '24px',
-  marginBottom: '12px',
+  background: 'rgba(255,255,255,0.05)',
+  borderRadius: '16px',
   '& .MuiOutlinedInput-root': {
-    borderRadius: '24px',
-    fontSize: '0.95rem',
-    paddingLeft: '16px',
-    paddingRight: '16px',
-    height: '40px',
-    [theme.breakpoints.up('md')]: {
-      height: '44px',
-      fontSize: '1rem',
+    borderRadius: '16px',
+    color: '#ffffff',
+    '& fieldset': {
+      borderColor: 'rgba(255,255,255,0.1)',
     },
+    '&:hover fieldset': {
+      borderColor: 'rgba(255,255,255,0.3)',
+    },
+    '&.Mui-focused fieldset': {
+      borderColor: '#FFEB3B',
+    },
+  },
+  '& .MuiInputBase-input::placeholder': {
+    color: 'rgba(255,255,255,0.4)',
+    opacity: 1,
   },
 }));
 
 const SubscribeButton = styled(Button)(({ theme }) => ({
-  backgroundColor: theme.palette.secondary.main,
-  color: '#fff',
-  borderRadius: '24px',
-  fontWeight: 600,
-  fontSize: '0.95rem',
+  backgroundColor: '#FFEB3B',
+  color: '#001D6E',
+  borderRadius: '16px',
+  padding: '12px 24px',
+  fontWeight: 800,
   textTransform: 'none',
-  width: '100%',
-  height: '40px',
+  fontSize: '1rem',
   '&:hover': {
-    backgroundColor: theme.palette.secondary.dark,
+    backgroundColor: '#FDD835',
+    transform: 'scale(1.02)',
   },
-  [theme.breakpoints.up('md')]: {
-    height: '44px',
-    fontSize: '1rem',
-  },
+  transition: 'all 0.2s ease',
 }));
 
 const Footer = () => {
+  const currentYear = new Date().getFullYear();
+
   return (
-    <FooterSection>
-      <FooterContainer>
-        {/* About Us */}
-        <FooterCol>
-          <FooterHeading>About Us</FooterHeading>
-          <Typography sx={{ color: '#fff', fontSize: { xs: '0.95rem', md: '1rem' }, fontWeight: 400 }}>
-            We create solutions tailored to your needs and values, "We Are, We Create".
+    <FooterSection component="footer">
+      <Container maxWidth="lg">
+        <Box 
+          sx={{ 
+            display: 'grid',
+            gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' },
+            gap: 8 
+          }}
+        >
+          {/* Brand Info */}
+          <Box sx={{ gridColumn: { xs: 'span 1', sm: 'span 2', md: 'span 1' } }}>
+            <Typography 
+              variant="h4" 
+              component={Link} 
+              to="/" 
+              sx={{ fontWeight: 900, mb: 3, letterSpacing: '-0.03em', color: 'white', textDecoration: 'none', display: 'block' }}
+            >
+              DX<Box component="span" sx={{ color: '#FFEB3B' }}>Hub</Box>
+            </Typography>
+            <Typography sx={{ color: 'rgba(255,255,255,0.7)', mb: 4, lineHeight: 1.7, fontSize: '1.1rem' }}>
+              We empower startups and individuals to bridge the gap between innovation and reality. Our mission is to raise the next generation of digital leaders.
+            </Typography>
+            <Box sx={{ display: 'flex' }}>
+              <SocialButton size="small"><FacebookIcon /></SocialButton>
+              <SocialButton size="small"><TwitterIcon /></SocialButton>
+              <SocialButton size="small" component="a" href="https://github.com/brendanmebson" target="_blank"><GitHubIcon /></SocialButton>
+              <SocialButton size="small"><LinkedInIcon /></SocialButton>
+              <SocialButton size="small"><InstagramIcon /></SocialButton>
+            </Box>
+          </Box>
+
+          {/* Quick Links */}
+          <Box>
+            <FooterHeading>Solutions</FooterHeading>
+            <FooterLink component={Link} to="/solutions">Talent Incubation</FooterLink>
+            <FooterLink component={Link} to="/solutions">Platform Growth</FooterLink>
+            <FooterLink component={Link} to="/products">Product Strategy</FooterLink>
+            <FooterLink component={Link} to="/solutions">Business Intelligence</FooterLink>
+            <FooterLink component={Link} to="/worklab">WorkLab</FooterLink>
+          </Box>
+
+          <Box>
+            <FooterHeading>Company</FooterHeading>
+            <FooterLink component={Link} to="/about">About Us</FooterLink>
+            <FooterLink component={Link} to="/team">Our Team</FooterLink>
+            <FooterLink component={Link} to="/stories">Success Stories</FooterLink>
+            <FooterLink component={Link} to="/resources">Resources</FooterLink>
+            <FooterLink component={Link} to="/contact">Contact</FooterLink>
+          </Box>
+
+          {/* Newsletter */}
+          <Box>
+            <FooterHeading>Stay Ahead</FooterHeading>
+            <Typography sx={{ color: 'rgba(255,255,255,0.7)', mb: 3, fontSize: '1rem' }}>
+              Get the latest insights on digital transformation and innovation delivered to your inbox.
+            </Typography>
+            <Stack spacing={2}>
+              <NewsletterInput 
+                fullWidth 
+                placeholder="Enter your email" 
+                variant="outlined" 
+              />
+              <SubscribeButton variant="contained">
+                Subscribe Now
+              </SubscribeButton>
+            </Stack>
+          </Box>
+        </Box>
+
+        <Divider sx={{ my: 8, borderColor: 'rgba(255,255,255,0.05)' }} />
+
+        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', alignItems: 'center', gap: 2 }}>
+          <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)' }}>
+            &copy; {currentYear} DX Innovation Hub. All rights reserved.
           </Typography>
-        </FooterCol>
-
-        {/* What We Do */}
-        <FooterCol>
-          <FooterHeading>What We Do</FooterHeading>
-          <FooterLink>Design</FooterLink>
-          <FooterLink>Business Solution</FooterLink>
-          <FooterLink>SaaS Solution</FooterLink>
-          <FooterLink>Business Intelligence</FooterLink>
-          <FooterLink>Software Development/Payment Integration</FooterLink>
-        </FooterCol>
-
-        {/* Menu */}
-        <FooterCol>
-          <FooterHeading>Menu</FooterHeading>
-          <FooterLink>Home</FooterLink>
-          <FooterLink>Services</FooterLink>
-          <FooterLink>Portfolio</FooterLink>
-          <FooterLink>Our Products</FooterLink>
-          <FooterLink>Blog</FooterLink>
-          <FooterLink>Contact Us</FooterLink>
-        </FooterCol>
-
-        {/* Get Newsletter */}
-        <FooterCol>
-          <FooterHeading>Get Newsletter</FooterHeading>
-          <Typography sx={{ color: '#fff', fontSize: { xs: '0.95rem', md: '1rem' }, fontWeight: 400, mb: 2 }}>
-            Get every single promotional & business update.
-          </Typography>
-          <NewsletterInput
-            placeholder="Email address"
-            variant="outlined"
-            fullWidth
-            InputProps={{
-              sx: { color: '#222', background: '#fff', borderRadius: '24px' },
-            }}
-          />
-          <SubscribeButton variant="contained">
-            Subscribe Now &rarr;
-          </SubscribeButton>
-        </FooterCol>
-      </FooterContainer>
+          <Stack direction="row" spacing={3}>
+            <Typography 
+              variant="body2" 
+              component={Link} 
+              to="/privacy" 
+              sx={{ color: 'rgba(255,255,255,0.5)', cursor: 'pointer', textDecoration: 'none', '&:hover': { color: '#FFEB3B' } }}
+            >
+              Privacy Policy
+            </Typography>
+            <Typography 
+              variant="body2" 
+              component={Link} 
+              to="/terms" 
+              sx={{ color: 'rgba(255,255,255,0.5)', cursor: 'pointer', textDecoration: 'none', '&:hover': { color: '#FFEB3B' } }}
+            >
+              Terms of Service
+            </Typography>
+          </Stack>
+        </Box>
+      </Container>
     </FooterSection>
   );
 };

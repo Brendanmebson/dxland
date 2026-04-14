@@ -1,149 +1,220 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Container, Typography, Avatar, IconButton } from '@mui/material';
+import { Box, Container, Typography, Avatar, IconButton, Stack } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { motion, AnimatePresence } from 'framer-motion';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import FormatQuoteIcon from '@mui/icons-material/FormatQuote';
 
 const TestimonialsSection = styled(Box)(({ theme }) => ({
-  backgroundColor: '#f8f9fa',
-  padding: '80px 0',
-}));
-
-const CardsRow = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  gap: '24px',
-  alignItems: 'flex-start',
-  marginTop: theme.spacing(4),
-  marginBottom: theme.spacing(4),
-  overflowX: 'auto', // optional: allow scrolling on small screens
-  scrollbarWidth: 'none', // Firefox
-  '&::-webkit-scrollbar': { display: 'none' }, // Chrome/Safari
-}));
-
-const TestimonialCard = styled(Box, {
-  shouldForwardProp: (prop) => prop !== 'primary', // prevent 'primary' from going to DOM
-})(({ theme, primary }) => ({
-  borderRadius: '20px',
-  padding: '28px 24px',
-  minWidth: 320,
-  maxWidth: 350,
-  background: primary ? '#0a174e' : '#fff',
-  color: primary ? '#fff' : '#222',
-  boxShadow: primary
-    ? '0 4px 24px rgba(10,23,78,0.10)'
-    : '0 4px 24px rgba(10,23,78,0.04)',
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'flex-start',
-  flexShrink: 0, // ensures consistent sizing in flex container
-}));
-
-const NavigationButton = styled(IconButton)(({ theme }) => ({
-  backgroundColor: '#fff',
-  boxShadow: '0 2px 10px rgba(0,0,0,0.08)',
-  margin: '0 8px',
-  '&:hover': {
-    backgroundColor: '#f5f5f5',
+  backgroundColor: '#fcfdfe',
+  padding: '160px 0',
+  position: 'relative',
+  overflow: 'hidden',
+  [theme.breakpoints.down('md')]: {
+    padding: '100px 0',
   },
 }));
 
+const SliderWrapper = styled(Box)({
+  position: 'relative',
+  marginTop: '64px',
+  width: '100%',
+  display: 'flex',
+  justifyContent: 'center',
+});
+
+const TestimonialCard = styled(motion.div, {
+  shouldForwardProp: (prop) => prop !== 'active',
+})(({ theme, active }) => ({
+  borderRadius: '32px',
+  padding: '48px',
+  background: active ? '#001D6E' : '#ffffff',
+  color: active ? '#ffffff' : '#1d1d1f',
+  border: active ? 'none' : '1px solid rgba(0, 29, 110, 0.08)',
+  boxShadow: active 
+    ? '0 30px 60px rgba(0,29,110,0.15)' 
+    : '0 10px 30px rgba(0,0,0,0.03)',
+  width: '100%',
+  maxWidth: '800px',
+  position: 'relative',
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '32px',
+  zIndex: active ? 2 : 1,
+}));
+
+const NavButton = styled(IconButton)(({ theme }) => ({
+  backgroundColor: '#ffffff',
+  color: '#001D6E',
+  boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+  border: '1px solid rgba(0,29,110,0.05)',
+  '&:hover': {
+    backgroundColor: '#f8f9fa',
+    transform: 'scale(1.1)',
+  },
+  transition: 'all 0.2s ease',
+}));
+
 const Testimonials = () => {
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [index, setIndex] = useState(0);
+  const [direction, setDirection] = useState(0);
 
   const testimonials = [
     {
       id: 1,
       name: 'Amelia Joseph',
-      position: 'Chief Manager',
+      position: 'Tech Lead @ Innovate',
       avatar: '/avatar1.jpg',
-      content: 'My vision came alive effortlessly. Their blend of casual and professional approach made the process a breeze. Creativity flowed, and the results were beyond my expectations.',
+      content: 'DXHub transformed how we approach digital strategy. Their team doesn’t just deliver code; they deliver solutions that actually move the needle for our business.',
     },
     {
       id: 2,
       name: 'Jacob Joshua',
-      position: 'Chief Manager',
+      position: 'Founder, AppreLab',
       avatar: '/avatar2.jpg',
-      content: 'I found the digital expertise I needed. Their creative-professional balance exceeded expectations. Friendly interactions, exceptional outcomes. For digital enchantment, it’s got to be Embrace!',
+      content: 'The mentorship and technical support we received from the hub were pivotal in launching our platform. They truly understand the startup lifecycle.',
     },
     {
       id: 3,
-      name: 'Jacob Joshua',
-      position: 'Chief Manager',
+      name: 'Sarah Chen',
+      position: 'Director of Product',
       avatar: '/avatar3.jpg',
-      content: 'Embrace really nails it! Creative brilliance, approachable style. They’re the partners you want—artistry meets strategy. Thrilled with what they achieved!',
+      content: 'I highy recommend DXHub for any enterprise looking to modernize their stack. Their attention to detail and performance-first mindset is unmatched.',
     },
   ];
 
-  // Show 3 cards at a time, sliding by 1
-  const getVisibleTestimonials = () => {
-    const arr = [];
-    for (let i = 0; i < 3; i++) {
-      arr.push(testimonials[(activeIndex + i) % testimonials.length]);
-    }
-    return arr;
+  const handleNext = () => {
+    setDirection(1);
+    setIndex((prev) => (prev + 1) % testimonials.length);
   };
 
   const handlePrev = () => {
-    setActiveIndex((prev) => (prev === 0 ? testimonials.length - 1 : prev - 1));
-  };
-
-  const handleNext = () => {
-    setActiveIndex((prev) => (prev + 1) % testimonials.length);
+    setDirection(-1);
+    setIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
   };
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      handleNext();
-    }, 4000);
-    return () => clearInterval(interval);
-    // eslint-disable-next-line
-  }, [activeIndex]);
+    const timer = setInterval(handleNext, 6000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const variants = {
+    enter: (direction) => ({
+      x: direction > 0 ? 300 : -300,
+      opacity: 0,
+      scale: 0.9,
+    }),
+    center: {
+      zIndex: 1,
+      x: 0,
+      opacity: 1,
+      scale: 1,
+    },
+    exit: (direction) => ({
+      zIndex: 0,
+      x: direction < 0 ? 300 : -300,
+      opacity: 0,
+      scale: 0.9,
+    }),
+  };
 
   return (
-    <TestimonialsSection>
+    <TestimonialsSection id="testimonials">
       <Container maxWidth="lg">
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Typography 
-            variant="h4" 
-            component="h2" 
-            sx={{ fontWeight: 600, mb: 0 }}
-          >
-            What Our Client Said About Us
-          </Typography>
+        <Stack direction={{ xs: 'column', md: 'row' }} justifyContent="space-between" alignItems={{ xs: 'flex-start', md: 'flex-end' }} spacing={4}>
           <Box>
-            <NavigationButton onClick={handlePrev}>
-              <ArrowBackIosNewIcon fontSize="small" />
-            </NavigationButton>
-            <NavigationButton onClick={handleNext}>
-              <ArrowForwardIosIcon fontSize="small" />
-            </NavigationButton>
+            <Typography variant="overline" sx={{ letterSpacing: '0.2em', fontWeight: 800, color: 'primary.main', mb: 1, display: 'block' }}>
+              TESTIMONIALS
+            </Typography>
+            <Typography variant="h2" sx={{ fontWeight: 900, fontSize: { xs: '2.5rem', md: '3.5rem' }, letterSpacing: '-0.02em' }}>
+              Trusted by <Box component="span" sx={{ color: 'primary.main' }}>Industry Leaders</Box>
+            </Typography>
           </Box>
-        </Box>
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <NavButton onClick={handlePrev} size="large">
+              <ArrowBackIosNewIcon />
+            </NavButton>
+            <NavButton onClick={handleNext} size="large">
+              <ArrowForwardIosIcon />
+            </NavButton>
+          </Box>
+        </Stack>
 
-        <CardsRow>
-          {getVisibleTestimonials().map((testimonial, idx) => (
-            <TestimonialCard key={testimonial.id} primary={idx === 0}>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <Avatar 
-                  src={testimonial.avatar} 
-                  alt={testimonial.name}
-                  sx={{ width: 48, height: 48, mr: 2 }}
-                />
-                <Box>
-                  <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
-                    {testimonial.name}
-                  </Typography>
-                  <Typography variant="body2" sx={{ opacity: 0.8 }}>
-                    {testimonial.position}
-                  </Typography>
-                </Box>
-              </Box>
-              <Typography variant="body2" sx={{ opacity: 0.95 }}>
-                {testimonial.content}
-              </Typography>
-            </TestimonialCard>
+        <SliderWrapper>
+          <Box sx={{ width: '100%', maxWidth: '800px', minHeight: '400px', display: 'flex', alignItems: 'center' }}>
+            <AnimatePresence initial={false} custom={direction} mode="wait">
+              <TestimonialCard
+                key={index}
+                custom={direction}
+                variants={variants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{
+                  x: { type: "spring", stiffness: 300, damping: 30 },
+                  opacity: { duration: 0.4 },
+                  scale: { duration: 0.4 }
+                }}
+                active={true}
+              >
+                <FormatQuoteIcon sx={{ 
+                  fontSize: '80px', 
+                  position: 'absolute', 
+                  top: '20px', 
+                  right: '40px', 
+                  opacity: 0.1,
+                  color: 'inherit'
+                }} />
+                
+                <Typography variant="h5" sx={{ 
+                  lineHeight: 1.6, 
+                  fontWeight: 500, 
+                  fontSize: { xs: '1.25rem', md: '1.75rem' },
+                  fontStyle: 'italic'
+                }}>
+                  "{testimonials[index].content}"
+                </Typography>
+
+                <Stack direction="row" spacing={3} alignItems="center">
+                  <Avatar 
+                    src={testimonials[index].avatar} 
+                    sx={{ width: 64, height: 64, border: '3px solid rgba(255,255,255,0.2)' }} 
+                  />
+                  <Box>
+                    <Typography variant="h6" sx={{ fontWeight: 800 }}>
+                      {testimonials[index].name}
+                    </Typography>
+                    <Typography variant="body1" sx={{ opacity: 0.7, fontWeight: 500 }}>
+                      {testimonials[index].position}
+                    </Typography>
+                  </Box>
+                </Stack>
+              </TestimonialCard>
+            </AnimatePresence>
+          </Box>
+        </SliderWrapper>
+        
+        {/* Pagination Dots */}
+        <Stack direction="row" spacing={1} justifyContent="center" sx={{ mt: 6 }}>
+          {testimonials.map((_, i) => (
+            <Box
+              key={i}
+              onClick={() => {
+                setDirection(i > index ? 1 : -1);
+                setIndex(i);
+              }}
+              sx={{
+                width: i === index ? '32px' : '12px',
+                height: '12px',
+                borderRadius: '6px',
+                bgcolor: i === index ? 'primary.main' : 'rgba(0,29,110,0.1)',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease'
+              }}
+            />
           ))}
-        </CardsRow>
+        </Stack>
       </Container>
     </TestimonialsSection>
   );

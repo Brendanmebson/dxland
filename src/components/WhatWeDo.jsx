@@ -1,6 +1,7 @@
 import React from 'react';
-import { Box, Container, Typography, Card, CardContent, CardMedia } from '@mui/material';
+import { Box, Container, Typography, CardContent, CardMedia } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
 import SchoolIcon from '@mui/icons-material/School';
 import DevicesIcon from '@mui/icons-material/Devices';
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
@@ -8,207 +9,247 @@ import talentIncubationImg from '../assets/WhatWeDo_img1.png';
 import platformIncubationImg from '../assets/WhatWeDo_img2.png';
 import productInnovationImg from '../assets/WhatWeDo_img3.png';
 
-const WhatWeDoSection = styled(Box)(() => ({
-  background: 'linear-gradient(135deg, #001D6E 0%, #0A1B40 100%)',
-  padding: '140px 0',
-  color: 'white',
+const SectionWrapper = styled(Box)(({ theme }) => ({
+  backgroundColor: '#001D6E',
+  padding: '160px 0',
   position: 'relative',
   overflow: 'hidden',
-  marginBottom: '20px',
+  color: '#ffffff',
 }));
 
-// Giant faint "S" background
-const BackgroundShape = styled('div')(() => ({
-  position: 'absolute',
-  top: '-10%',
-  left: '-20%',
-  width: '160%',
-  height: '160%',
-  zIndex: 0,
-  opacity: 0.96,
-  transform: 'rotate(-20deg)',
-  pointerEvents: 'none',
-  '& svg': {
-    width: '100%',
-    height: '100%',
-  },
-}));
-
-const ServiceCard = styled(Card)(() => ({
-  borderRadius: '20px',
-  overflow: 'hidden',
+const StyledCard = styled(motion.div)(({ theme }) => ({
   height: '100%',
-  background: 'rgba(255, 255, 255, 0.1)',
-  backdropFilter: 'blur(8px)',
-  border: '1px solid rgba(255, 255, 255, 0.15)',
-  boxShadow: '0 8px 20px rgba(0,0,0,0.25)',
-  transition: 'all 0.3s ease',
+  backgroundColor: 'rgba(255, 255, 255, 0.03)',
+  backdropFilter: 'blur(12px)',
+  borderRadius: '32px',
+  border: '1px solid rgba(255, 255, 255, 0.1)',
+  overflow: 'hidden',
   position: 'relative',
   zIndex: 1,
-  '&:hover': {
-    transform: 'translateY(-6px) scale(1.01)',
-    boxShadow: '0 12px 30px rgba(0,0,0,0.3)',
-  },
 }));
 
-const ImageWrapper = styled(Box)(() => ({
-  padding: '10px',
-  borderRadius: '16px',
-  overflow: 'hidden',
-  background: 'linear-gradient(135deg, rgba(255,255,255,0.25), rgba(255,255,255,0))',
-}));
+const CardGlow = styled(motion.div)({
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  background: 'radial-gradient(600px circle at var(--x) var(--y), rgba(255,255,255,0.06), transparent 40%)',
+  zIndex: 0,
+  pointerEvents: 'none',
+});
 
-const ServiceIcon = styled(Box)(({ bgcolor }) => ({
-  width: '54px',
-  height: '54px',
-  borderRadius: '14px',
-  background: `linear-gradient(135deg, ${bgcolor}, #ffffff22)`,
+const IconWrapper = styled(Box)(({ color }) => ({
+  width: '64px',
+  height: '64px',
+  borderRadius: '20px',
+  backgroundColor: color,
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
-  boxShadow: '0 4px 10px rgba(0,0,0,0.2)',
-  marginRight: '12px',
+  marginBottom: '24px',
+  boxShadow: `0 12px 24px ${color}44`,
+  position: 'relative',
+  zIndex: 1,
 }));
+
+const InteractiveCard = ({ service, index }) => {
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+
+  const mouseXSpring = useSpring(x);
+  const mouseYSpring = useSpring(y);
+
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["7deg", "-7deg"]);
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-7deg", "7deg"]);
+
+  const handleMouseMove = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const width = rect.width;
+    const height = rect.height;
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    const xPct = mouseX / width - 0.5;
+    const yPct = mouseY / height - 0.5;
+    x.set(xPct);
+    y.set(yPct);
+  };
+
+  const handleMouseLeave = () => {
+    x.set(0);
+    y.set(0);
+  };
+
+  return (
+    <StyledCard
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.8, delay: index * 0.15, ease: [0.22, 1, 0.36, 1] }}
+      style={{
+        rotateX,
+        rotateY,
+        transformStyle: "preserve-3d",
+      }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+    >
+      <CardMedia
+        component="img"
+        height={{ xs: "180", sm: "240" }}
+        image={service.image}
+        alt={service.title}
+        sx={{ 
+          filter: 'brightness(0.9)',
+          transition: 'transform 0.5s ease',
+          '&:hover': { transform: 'scale(1.05)' }
+        }}
+      />
+      <CardContent sx={{ p: 5, position: 'relative', zIndex: 1 }}>
+        <IconWrapper color={service.color} sx={{ transform: 'translateZ(20px)' }}>
+          {service.icon}
+        </IconWrapper>
+        <Typography variant="h4" sx={{ 
+          fontWeight: 800, 
+          mb: 2, 
+          transform: 'translateZ(30px)',
+          fontSize: '1.75rem'
+        }}>
+          {service.title}
+        </Typography>
+        <Typography variant="body1" sx={{ 
+          color: 'rgba(255,255,255,0.7)', 
+          lineHeight: 1.7, 
+          fontSize: '1.1rem',
+          transform: 'translateZ(10px)'
+        }}>
+          {service.description}
+        </Typography>
+      </CardContent>
+    </StyledCard>
+  );
+};
 
 const WhatWeDo = () => {
   const services = [
     {
       title: 'Talent Incubation',
-      description:
-        'We nurture individuals with the right skills and mentorship, equipping them to become the next generation of digital leaders ready to create impact.',
+      description: 'We nurture individuals with the right skills and mentorship, equipping them to become the next generation of digital leaders.',
       image: talentIncubationImg,
-      iconColor: '#8B5CF6',
-      icon: <SchoolIcon sx={{ color: 'white', fontSize: '26px' }} />,
+      color: '#8B5CF6',
+      icon: <SchoolIcon sx={{ color: 'white', fontSize: 32 }} />,
     },
     {
       title: 'Platform Incubation',
-      description:
-        'We empower startups and enterprises by providing platforms that accelerate growth, strengthen innovation, and foster scalability.',
+      description: 'We empower startups and enterprises by providing platforms that accelerate growth and foster global scalability.',
       image: platformIncubationImg,
-      iconColor: '#6366F1',
-      icon: <DevicesIcon sx={{ color: 'white', fontSize: '26px' }} />,
+      color: '#6366F1',
+      icon: <DevicesIcon sx={{ color: 'white', fontSize: 32 }} />,
     },
     {
       title: 'Product Innovation',
-      description:
-        'We transform bold ideas into digital products, delivering scalable solutions that solve real social and economic challenges.',
+      description: 'We transform bold ideas into scalable digital products that solve real-world social and economic challenges.',
       image: productInnovationImg,
-      iconColor: '#EC4899',
-      icon: <LightbulbIcon sx={{ color: 'white', fontSize: '26px' }} />,
+      color: '#EC4899',
+      icon: <LightbulbIcon sx={{ color: 'white', fontSize: 32 }} />,
     },
   ];
 
   return (
-    <WhatWeDoSection>
-      {/* Background S */}
-      <BackgroundShape>
-        <svg viewBox="0 0 1200 1200" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-          <path
-            d="M200,300 
-               C400,50 800,50 1000,300 
-               C1200,550 600,650 400,900 
-               C200,1150 1000,1150 1000,900"
-            fill="none"
-            stroke="rgba(0, 102, 255, 0.25)"
-            strokeWidth="120"
-            strokeLinecap="round"
-          />
+    <SectionWrapper id="services">
+      {/* Dynamic Background Pattern */}
+      <Box sx={{ 
+        position: 'absolute', 
+        top: 0, 
+        left: 0, 
+        width: '100%', 
+        height: '100%', 
+        opacity: 0.15, 
+        pointerEvents: 'none',
+        zIndex: 0
+      }}>
+        <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse">
+              <path d="M 100 0 L 0 0 0 100" fill="none" stroke="white" strokeWidth="0.5" />
+            </pattern>
+            <radialGradient id="fade" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="white" stopOpacity="1" />
+              <stop offset="100%" stopColor="white" stopOpacity="0" />
+            </radialGradient>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#grid)" />
         </svg>
-      </BackgroundShape>
+      </Box>
 
-      <Container maxWidth={false} sx={{ width: '100%', px: { xs: 2, md: 6 } }}>
-        {/* Heading */}
-        <Typography
-          variant="h3"
-          component="h2"
-          sx={{
-            textAlign: 'center',
-            mb: 8,
-            fontWeight: 700,
-            letterSpacing: '1px',
-            position: 'relative',
-            zIndex: 1,
-          }}
-        >
-          What We{' '}
-          <Box component="span" sx={{ color: '#1a2dd6', textShadow: '0 2px 6px rgba(0,0,0,0.4)' }}>
-            Do
-          </Box>
-        </Typography>
+      {/* Floating Decorative Elements */}
+      <motion.div
+        style={{
+          position: 'absolute',
+          top: '10%',
+          right: '5%',
+          width: '300px',
+          height: '300px',
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(255,235,59,0.1) 0%, transparent 70%)',
+          filter: 'blur(50px)',
+          zIndex: 0,
+        }}
+        animate={{
+          y: [0, 50, 0],
+          scale: [1, 1.1, 1],
+        }}
+        transition={{
+          duration: 10,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+      />
 
-        {/* Cards */}
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: { xs: 'column', md: 'row' },
-            justifyContent: 'center',
-            alignItems: 'center', // centers cards horizontally on mobile
-            gap: { xs: 5, md: 6 },
-            flexWrap: 'wrap',
+      <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
+        <Box sx={{ textAlign: 'center', mb: 12 }}>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            <Typography variant="overline" sx={{ 
+              letterSpacing: '0.4em', 
+              opacity: 0.8, 
+              fontWeight: 800,
+              color: 'secondary.main'
+            }}>
+              WHAT WE DO
+            </Typography>
+            <Typography variant="h2" sx={{ 
+              fontWeight: 900, 
+              mt: 2, 
+              mb: 3,
+              fontSize: { xs: '2.5rem', md: '3.75rem' },
+              letterSpacing: '-0.02em'
+            }}>
+              Driving Innovation Across the <br />
+              <Box component="span" sx={{ 
+                color: 'secondary.main',
+              }}>Digital Spectrum</Box>
+            </Typography>
+          </motion.div>
+        </Box>
+
+        <Box 
+          sx={{ 
+            display: 'grid',
+            gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' },
+            gap: 6
           }}
         >
           {services.map((service, index) => (
-            <Box
-              key={index}
-              sx={{
-                flex: '0 1 320px',
-                maxWidth: '320px',
-                width: '100%',
-                margin: '0 auto', // center card in mobile view
-              }}
-            >
-              <ServiceCard>
-                <ImageWrapper>
-                  <CardMedia
-                    component="img"
-                    height="200"
-                    image={service.image}
-                    alt={service.title}
-                    sx={{ borderRadius: '12px', boxShadow: '0 6px 15px rgba(0,0,0,0.2)' }}
-                  />
-                </ImageWrapper>
-
-                <CardContent sx={{ p: 3, textAlign: { xs: 'center', md: 'left' } }}>
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      flexDirection: { xs: 'column', md: 'row' },
-                      alignItems: 'center',
-                      mb: 2,
-                    }}
-                  >
-                    <ServiceIcon bgcolor={service.iconColor}>{service.icon}</ServiceIcon>
-                    <Typography
-                      variant="h6"
-                      component="h3"
-                      sx={{
-                        fontWeight: 700,
-                        color: service.iconColor,
-                        letterSpacing: '0.5px',
-                        mt: { xs: 1, md: 0 },
-                      }}
-                    >
-                      {service.title}
-                    </Typography>
-                  </Box>
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      color: '#f1f1f1',
-                      textAlign: 'justify',
-                      lineHeight: 1.6,
-                      fontSize: { xs: '0.95rem', sm: '1rem' },
-                    }}
-                  >
-                    {service.description}
-                  </Typography>
-                </CardContent>
-              </ServiceCard>
-            </Box>
+            <InteractiveCard key={index} service={service} index={index} />
           ))}
         </Box>
       </Container>
-    </WhatWeDoSection>
+    </SectionWrapper>
   );
 };
 
