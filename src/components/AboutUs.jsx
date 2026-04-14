@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Container, Typography, Stack } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { motion } from 'framer-motion';
-import aboutUs_img from '../assets/aboutUs_img.png';
+import AboutUs_img from '../assets/AboutUs_img.png';
 
 const AboutUsSection = styled(Box)(({ theme }) => ({
   padding: '160px 0',
@@ -120,7 +120,7 @@ const AboutUs = () => {
             >
               <Box
                 component="img"
-                src={aboutUs_img}
+                src={AboutUs_img}
                 alt="About DX Innovation Hub"
                 sx={{
                   width: '100%',
